@@ -1,0 +1,130 @@
+<section class="grid gap-6">
+
+  <!-- Reporte de ventas por día -->
+  <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/70">
+    <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+      <h2 class="text-lg font-bold text-slate-900">Ventas por día</h2>
+
+      <select
+        [(ngModel)]="diasSeleccionados"
+        (ngModelChange)="cargarVentasPorDia()"
+        class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-700">
+        <option [ngValue]="7">Últimos 7 días</option>
+        <option [ngValue]="14">Últimos 14 días</option>
+        <option [ngValue]="30">Últimos 30 días</option>
+      </select>
+    </div>
+
+    <div class="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-2">
+      <div class="rounded-lg bg-slate-50 px-4 py-3">
+        <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Total del periodo</p>
+        <p class="text-xl font-extrabold text-emerald-700">S/ {{ totalPeriodo().toFixed(2) }}</p>
+      </div>
+      <div class="rounded-lg bg-slate-50 px-4 py-3">
+        <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Ventas del periodo</p>
+        <p class="text-xl font-extrabold text-slate-800">{{ ventasPeriodo() }}</p>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-[480px] text-left text-sm">
+        <thead class="text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="py-2">Fecha</th>
+            <th class="py-2"># Ventas</th>
+            <th class="py-2">Total</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200">
+          @for (dia of ventasPorDia(); track dia.fecha) {
+            <tr>
+              <td class="py-2 font-semibold text-slate-800">{{ dia.fecha | date:'dd/MM/yyyy' }}</td>
+              <td class="py-2 text-slate-600">{{ dia.cantidadVentas }}</td>
+              <td class="py-2 font-semibold text-emerald-700">S/ {{ dia.total.toFixed(2) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+
+    <!-- Productos más vendidos -->
+    <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/70">
+      <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-lg font-bold text-slate-900">Productos más vendidos</h2>
+
+        <select
+          [(ngModel)]="topSeleccionado"
+          (ngModelChange)="cargarProductosMasVendidos()"
+          class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-700">
+          <option [ngValue]="5">Top 5</option>
+          <option [ngValue]="10">Top 10</option>
+          <option [ngValue]="20">Top 20</option>
+        </select>
+      </div>
+
+      @if (productosMasVendidos().length === 0) {
+        <p class="text-sm text-slate-500">Aún no hay datos de ventas.</p>
+      } @else {
+        <table class="w-full text-left text-sm">
+          <thead class="text-xs uppercase tracking-wide text-slate-500">
+            <tr>
+              <th class="py-2">Producto</th>
+              <th class="py-2">Unidades</th>
+              <th class="py-2">Total vendido</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            @for (prod of productosMasVendidos(); track prod.productoId) {
+              <tr>
+                <td class="py-2 font-semibold text-slate-800">{{ prod.nombre }}</td>
+                <td class="py-2 text-slate-600">{{ prod.cantidadVendida }}</td>
+                <td class="py-2 font-semibold text-emerald-700">S/ {{ prod.totalVendido.toFixed(2) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+    <!-- Stock bajo -->
+    <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/70">
+      <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <h2 class="text-lg font-bold text-slate-900">Stock bajo</h2>
+
+        <select
+          [(ngModel)]="umbralSeleccionado"
+          (ngModelChange)="cargarStockBajo()"
+          class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-700">
+          <option [ngValue]="5">Menos de 5</option>
+          <option [ngValue]="10">Menos de 10</option>
+          <option [ngValue]="20">Menos de 20</option>
+        </select>
+      </div>
+
+      @if (stockBajo().length === 0) {
+        <p class="text-sm text-slate-500">No hay productos por debajo del umbral.</p>
+      } @else {
+        <table class="w-full text-left text-sm">
+          <thead class="text-xs uppercase tracking-wide text-slate-500">
+            <tr>
+              <th class="py-2">Producto</th>
+              <th class="py-2">Stock actual</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-200">
+            @for (prod of stockBajo(); track prod.id) {
+              <tr>
+                <td class="py-2 font-semibold text-slate-800">{{ prod.nombre }}</td>
+                <td class="py-2 font-bold text-red-600">{{ prod.stock }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,163 @@
+<section class="grid gap-6">
+
+  @if (mensajeError()) {
+    <div class="rounded-lg border border-red-200 bg-red-50 px-5 py-3 font-medium text-red-700">
+      {{ mensajeError() }}
+    </div>
+  }
+
+  @if (mensajeExito()) {
+    <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-3 font-medium text-emerald-700">
+      {{ mensajeExito() }}
+    </div>
+  }
+
+  <div class="grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
+
+    <!-- Formulario para agregar productos al carrito -->
+    <div class="h-fit rounded-lg border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/70">
+      <h2 class="mb-5 text-xl font-bold text-slate-900">Nueva Venta</h2>
+
+      <form [formGroup]="itemForm" (ngSubmit)="agregarAlCarrito()" class="grid gap-4">
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-slate-600">Producto</label>
+          <select
+            formControlName="productoId"
+            class="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none transition focus:border-emerald-700 focus:ring-4 focus:ring-emerald-700/10">
+            <option value="" disabled selected>Seleccione un producto...</option>
+            @for (prod of productos(); track prod.id) {
+              <option [value]="prod.id" [disabled]="prod.stock <= 0">
+                {{ prod.nombre }} — S/ {{ prod.precio }} (stock: {{ prod.stock }})
+              </option>
+            }
+          </select>
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-slate-600">Cantidad</label>
+          <input
+            type="number"
+            formControlName="cantidad"
+            min="1"
+            class="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 outline-none transition focus:border-emerald-700 focus:ring-4 focus:ring-emerald-700/10">
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="itemForm.invalid"
+          class="min-h-11 w-full rounded-lg bg-slate-800 px-4 py-2 font-bold text-white shadow-lg shadow-slate-800/20 transition hover:-translate-y-0.5 hover:bg-slate-900 disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-slate-400 disabled:shadow-none">
+          Agregar al carrito
+        </button>
+      </form>
+
+      <!-- Carrito -->
+      <div class="mt-6 border-t border-slate-200 pt-5">
+        <h3 class="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">Carrito</h3>
+
+        @if (carrito().length === 0) {
+          <p class="text-sm text-slate-500">Aún no agregaste productos.</p>
+        } @else {
+          <ul class="grid gap-2">
+            @for (item of carrito(); track item.producto.id) {
+              <li class="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm">
+                <div>
+                  <p class="font-semibold text-slate-800">{{ item.producto.nombre }}</p>
+                  <p class="text-slate-500">{{ item.cantidad }} x S/ {{ item.producto.precio }} = S/ {{ (item.cantidad * item.producto.precio).toFixed(2) }}</p>
+                </div>
+                <button (click)="quitarDelCarrito(item.producto.id)" class="font-bold text-red-600 hover:underline">
+                  Quitar
+                </button>
+              </li>
+            }
+          </ul>
+
+          <div class="mt-4 flex items-center justify-between border-t border-slate-200 pt-3">
+            <span class="font-bold text-slate-700">Total</span>
+            <span class="text-lg font-extrabold text-slate-900">S/ {{ totalCarrito().toFixed(2) }}</span>
+          </div>
+
+          <div class="mt-4 grid gap-2">
+            <button
+              (click)="registrarVenta()"
+              [disabled]="registrando()"
+              class="min-h-11 w-full rounded-lg bg-emerald-700 px-4 py-2 font-bold text-white shadow-lg shadow-emerald-700/20 transition hover:-translate-y-0.5 hover:bg-emerald-800 disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-slate-400 disabled:shadow-none">
+              {{ registrando() ? 'Registrando...' : 'Registrar venta' }}
+            </button>
+            <button
+              type="button"
+              (click)="vaciarCarrito()"
+              class="min-h-11 w-full rounded-lg bg-slate-200 px-4 py-2 font-bold text-slate-700 transition hover:bg-slate-300">
+              Vaciar carrito
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Historial de ventas -->
+    <div class="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-lg shadow-slate-200/70">
+      <table class="w-full min-w-[640px] text-left">
+        <thead class="bg-slate-100 text-xs uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-5 py-4">Venta</th>
+            <th class="px-5 py-4">Fecha</th>
+            <th class="px-5 py-4">Items</th>
+            <th class="px-5 py-4">Total</th>
+            <th class="px-5 py-4">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-slate-200">
+          @for (venta of ventas(); track venta.id) {
+            <tr class="transition hover:bg-slate-50">
+              <td class="px-5 py-4 font-bold text-slate-900">#{{ venta.id }}</td>
+              <td class="px-5 py-4 text-slate-500">{{ venta.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td class="px-5 py-4 text-slate-500">{{ venta.detalles.length }} producto(s)</td>
+              <td class="px-5 py-4 font-bold text-emerald-700">S/ {{ venta.total.toFixed(2) }}</td>
+              <td class="flex gap-3 px-5 py-4">
+                <button (click)="toggleDetalle(venta)" class="font-bold text-blue-700 hover:underline">
+                  {{ ventaExpandidaId() === venta.id ? 'Ocultar' : 'Ver detalle' }}
+                </button>
+                <button (click)="anularVenta(venta.id)" class="font-bold text-red-600 hover:underline">
+                  Anular
+                </button>
+              </td>
+            </tr>
+
+            @if (ventaExpandidaId() === venta.id) {
+              <tr>
+                <td colspan="5" class="bg-slate-50 px-5 py-4">
+                  <table class="w-full text-sm">
+                    <thead class="text-xs uppercase tracking-wide text-slate-500">
+                      <tr>
+                        <th class="py-2 text-left">Producto</th>
+                        <th class="py-2 text-left">Cantidad</th>
+                        <th class="py-2 text-left">Precio unit.</th>
+                        <th class="py-2 text-left">Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200">
+                      @for (det of venta.detalles; track det.id) {
+                        <tr>
+                          <td class="py-2 font-semibold text-slate-800">{{ det.producto.nombre }}</td>
+                          <td class="py-2 text-slate-600">{{ det.cantidad }}</td>
+                          <td class="py-2 text-slate-600">S/ {{ det.precioUnitario }}</td>
+                          <td class="py-2 font-semibold text-slate-800">S/ {{ det.subtotal.toFixed(2) }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            }
+          } @empty {
+            <tr>
+              <td colspan="5" class="px-5 py-8 text-center text-slate-500">Aún no hay ventas registradas.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
