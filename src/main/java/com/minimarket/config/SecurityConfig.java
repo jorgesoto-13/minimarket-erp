@@ -25,14 +25,17 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
     .csrf(AbstractHttpConfigurer::disable)
-        // Agregamos esta configuración robusta de CORS
         .cors(cors -> cors.configurationSource(request -> {
-            var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
-            corsConfiguration.setAllowedOrigins(java.util.List.of("http://localhost:4200"));
-            corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-            corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
-            return corsConfiguration;
-        }))
+            var config = new org.springframework.web.cors.CorsConfiguration();
+            config.setAllowedOrigins(java.util.List.of(
+                "http://localhost:4200",
+                "https://minimarket-erp.vercel.app"
+    ));
+    config.setAllowedMethods(java.util.List.of("GET","POST","PUT","DELETE","OPTIONS"));
+    config.setAllowedHeaders(java.util.List.of("*"));
+    config.setAllowCredentials(true);
+    return config;
+}))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/auth/**").permitAll() // Público
 
