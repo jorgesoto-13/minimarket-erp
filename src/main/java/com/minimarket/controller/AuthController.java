@@ -9,7 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "https://minimarket-erp.vercel.app"})
 public class AuthController {
 
     private final JwtUtil jwtUtil;
