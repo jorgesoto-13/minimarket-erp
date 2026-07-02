@@ -1,24 +1,25 @@
-import { Component, inject } from '@angular/core'; // <-- Agrupados aquí
-import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router'; // <-- Agrupados aquí
+import { Component, inject } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from './services/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  standalone: true, 
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  standalone: true,
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
   title = 'minimarket';
+  menuAbierto = false;
 
-  // Inyectamos el servicio para saber si está logueado
   authService = inject(AuthService);
   private router = inject(Router);
 
-  // Método para el nuevo botón de salir
   cerrarSesion() {
     this.authService.logout();
+    this.menuAbierto = false;
     this.router.navigate(['/login']);
   }
 }
