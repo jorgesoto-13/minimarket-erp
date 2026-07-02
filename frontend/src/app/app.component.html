@@ -1,69 +1,109 @@
 @if (authService.estaAutenticado()) {
-  <nav class="bg-white px-8 py-4 flex flex-wrap justify-between items-center gap-4 border-b border-gray-200 mb-6">
+  <nav class="bg-white px-4 py-4 border-b border-gray-200 mb-6">
 
-    <div>
-      <p class="text-teal-700 text-xs font-bold tracking-widest uppercase mb-1">Panel Administrativo</p>
-      <h1 class="text-3xl font-extrabold text-slate-900">Gestión Minimarket</h1>
+    <div class="flex justify-between items-center">
+      <div>
+        <p class="text-teal-700 text-xs font-bold tracking-widest uppercase">Panel Administrativo</p>
+        <h1 class="text-xl font-extrabold text-slate-900">Gestión Minimarket</h1>
+      </div>
+
+      <!-- Botón hamburguesa solo en móvil -->
+      <button
+        (click)="menuAbierto = !menuAbierto"
+        class="lg:hidden border border-slate-300 rounded-md p-2 text-slate-700 hover:bg-slate-50">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
     </div>
 
-    <div class="flex flex-wrap gap-2">
+    <!-- Menú desktop (horizontal) -->
+    <div class="hidden lg:flex flex-wrap gap-2 mt-4">
       @if (authService.esAdmin()) {
-        <button
-          routerLink="/dashboard"
-          routerLinkActive="bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/30"
+        <button routerLink="/dashboard" routerLinkActive="bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/30"
           class="border border-gray-300 text-slate-700 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-400 hover:bg-indigo-50 hover:shadow-md">
           Dashboard
         </button>
-
-        <button
-          routerLink="/reportes"
-          routerLinkActive="bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/30"
+        <button routerLink="/reportes" routerLinkActive="bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/30"
           class="border border-gray-300 text-slate-700 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-400 hover:bg-blue-50 hover:shadow-md">
           Reportes
         </button>
-
-        <button
-          routerLink="/categorias"
-          routerLinkActive="bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-600/30"
+        <button routerLink="/categorias" routerLinkActive="bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-600/30"
           class="border border-gray-300 text-slate-700 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-purple-400 hover:bg-purple-50 hover:shadow-md">
           Categorías
         </button>
       }
-
-      <button
-        routerLink="/productos"
-        routerLinkActive="bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-600/30"
+      <button routerLink="/productos" routerLinkActive="bg-teal-600 text-white border-teal-600 shadow-md shadow-teal-600/30"
         class="border border-gray-300 text-slate-700 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400 hover:bg-teal-50 hover:shadow-md">
         Inventario
       </button>
-
-      <button
-        routerLink="/ventas"
-        routerLinkActive="bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/30"
+      <button routerLink="/ventas" routerLinkActive="bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/30"
         class="border border-gray-300 text-slate-700 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-400 hover:bg-emerald-50 hover:shadow-md">
         Ventas
       </button>
-
       @if (authService.esAdmin()) {
-        <button
-          routerLink="/compras"
-          routerLinkActive="bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/30"
+        <button routerLink="/compras" routerLinkActive="bg-amber-600 text-white border-amber-600 shadow-md shadow-amber-600/30"
           class="border border-gray-300 text-slate-700 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-400 hover:bg-amber-50 hover:shadow-md">
           Compras
         </button>
-
-        <button
-          routerLink="/usuarios"
-          routerLinkActive="bg-violet-600 text-white border-violet-600 shadow-md shadow-violet-600/30"
+        <button routerLink="/usuarios" routerLinkActive="bg-violet-600 text-white border-violet-600 shadow-md shadow-violet-600/30"
           class="border border-gray-300 text-slate-700 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:-translate-y-0.5 hover:border-violet-400 hover:bg-violet-50 hover:shadow-md">
           Usuarios
         </button>
       }
-
       <button (click)="cerrarSesion()" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-md">
         Salir
       </button>
     </div>
+
+    <!-- Menú móvil (vertical, se abre con el botón hamburguesa) -->
+    @if (menuAbierto) {
+      <div class="lg:hidden flex flex-col gap-2 mt-4">
+        @if (authService.esAdmin()) {
+          <button routerLink="/dashboard" routerLinkActive="bg-indigo-600 text-white border-indigo-600"
+            (click)="menuAbierto = false"
+            class="border border-gray-300 text-slate-700 px-4 py-3 rounded-md font-medium text-left">
+            Dashboard
+          </button>
+          <button routerLink="/reportes" routerLinkActive="bg-blue-600 text-white border-blue-600"
+            (click)="menuAbierto = false"
+            class="border border-gray-300 text-slate-700 px-4 py-3 rounded-md font-medium text-left">
+            Reportes
+          </button>
+          <button routerLink="/categorias" routerLinkActive="bg-purple-600 text-white border-purple-600"
+            (click)="menuAbierto = false"
+            class="border border-gray-300 text-slate-700 px-4 py-3 rounded-md font-medium text-left">
+            Categorías
+          </button>
+        }
+        <button routerLink="/productos" routerLinkActive="bg-teal-600 text-white border-teal-600"
+          (click)="menuAbierto = false"
+          class="border border-gray-300 text-slate-700 px-4 py-3 rounded-md font-medium text-left">
+          Inventario
+        </button>
+        <button routerLink="/ventas" routerLinkActive="bg-emerald-600 text-white border-emerald-600"
+          (click)="menuAbierto = false"
+          class="border border-gray-300 text-slate-700 px-4 py-3 rounded-md font-medium text-left">
+          Ventas
+        </button>
+        @if (authService.esAdmin()) {
+          <button routerLink="/compras" routerLinkActive="bg-amber-600 text-white border-amber-600"
+            (click)="menuAbierto = false"
+            class="border border-gray-300 text-slate-700 px-4 py-3 rounded-md font-medium text-left">
+            Compras
+          </button>
+          <button routerLink="/usuarios" routerLinkActive="bg-violet-600 text-white border-violet-600"
+            (click)="menuAbierto = false"
+            class="border border-gray-300 text-slate-700 px-4 py-3 rounded-md font-medium text-left">
+            Usuarios
+          </button>
+        }
+        <button (click)="cerrarSesion()" class="bg-red-50 text-red-600 border border-red-200 px-4 py-3 rounded-md font-medium text-left">
+          Salir
+        </button>
+      </div>
+    }
 
   </nav>
 }
