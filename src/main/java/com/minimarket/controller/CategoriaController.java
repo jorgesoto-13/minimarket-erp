@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/categorias")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "https://minimarket-erp.vercel.app"})
 public class CategoriaController {
 
     private final CategoriaRepository categoriaRepository;
