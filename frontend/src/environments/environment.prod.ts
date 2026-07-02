@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://PENDIENTE.up.railway.app'
+  apiUrl: 'https://minimarket-erp-production.up.railway.app'
 };
